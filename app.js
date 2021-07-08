@@ -8,7 +8,9 @@ var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 var username =process.env.CBTUSERNAME; 
 var authkey = process.env.CBTAUTHKEY; 
 let urlToTest = process.env.TESTPAGE
+const testId = new Date().getTime();
 
+urlToTest += `?testId=${testId}`
 
 var caps = {
     name : 'Basic Test Example',
