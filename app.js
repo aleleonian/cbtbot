@@ -6,7 +6,7 @@ var webdriver = require("selenium-webdriver");
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
 var username =process.env.CBTUSERNAME; 
-var authkey = process.env.AUTHKEY; 
+var authkey = process.env.CBTAUTHKEY; 
 let urlToTest = process.env.TESTPAGE
 
 
