@@ -1,11 +1,14 @@
+require('dotenv').config()
+
 "use strict";
 var webdriver = require("selenium-webdriver");
  
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
-var username ='alejandro.leonian@humansecurity.com'; //replace with your email address
-var authkey = 'u8acc56a4c5b3019'; //replace with your authkey
-let urlToTest = 'http://latigodeploy.surge.sh'
+var username =process.env.CBTUSERNAME; 
+var authkey = process.env.AUTHKEY; 
+let urlToTest = process.env.TESTPAGE
+
 
 var caps = {
     name : 'Basic Test Example',
