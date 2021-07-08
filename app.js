@@ -1,59 +1,134 @@
 require('dotenv').config()
+const axios = require('axios');
+let capsArray = require('./browsers.all.cbt.json')
 
 "use strict";
 var webdriver = require("selenium-webdriver");
- 
+
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
-var username =process.env.CBTUSERNAME; 
-var authkey = process.env.CBTAUTHKEY; 
+var username = process.env.CBTUSERNAME;
+var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE
 const testId = new Date().getTime();
 
 urlToTest += `?testId=${testId}`
 
-var caps = {
-    name : 'Basic Test Example',
-    build : '1.0',
-    version : '70',
-    platform : 'Windows 10',
-    screen_resolution : '1366x768',
-    record_video : 'true',
-    record_network : 'false',
-    browserName : 'Chrome',
-    username : username,
-    password : authkey
+
+var basicCapInfo = {
+    name: 'Vernon Test',
+    build: '1.0',
+    record_video: 'true',
+    record_network: 'false',
+    username: username,
+    password: authkey
 };
 
+async function doYourthing() {
+    try {
 
-async function basicExample(){
-    try{
-        
-        console.log("Reaching test page via CBT...")
-        var driver = new webdriver.Builder()
-            .usingServer(cbtHub)
-            .withCapabilities(caps)
-            .build();
+        console.log("Waking the servers up...")
+
+        await wakeServerUp('https://backend.alejandroleonian.com.ar/');
+
+        await wakeServerUp(urlToTest);
+
+        for (let i = 0; i < capsArray.length; i++) {
+
+            caps = { ...basicCapInfo, ...capsArray[i] };
+
+            console.log("caps->" + JSON.stringify(caps))
+
+            await sendTest(caps, testId);
+
+        }
 
 
-        await driver.get(urlToTest);
+        let testResults = await getTestResults(testId);
 
-        await driver.getTitle().then(function(title) {
-                    console.log("The title is: " + title)
-            });
+        let howManyEntries = parseInt(testResults.substr(0, testResults.indexOf('results')).trim());
 
-        driver.quit();
+        console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
+
+        if (howManyEntries == capsArray.length) {
+
+            console.log(`ALL GOOD :D`)
+
+        }
+
+
     }
 
-    catch(err){
+    catch (err) {
         handleFailure(err, driver)
     }
 
 }
 
-basicExample();
+
+
+doYourthing();
 
 function handleFailure(err, driver) {
-     console.error('Something went wrong!\n', err.stack, '\n');
-     driver.quit();
+    console.error('Something went wrong!\n', err.stack, '\n');
+    driver.quit();
+}
+
+async function getTestResults(testId) {
+
+    return new Promise((resolve, reject) => {
+        axios.get(`https://backend.alejandroleonian.com.ar/signals?testId=${testId}`)
+            .then(response => {
+                resolve(response.data)
+            })
+            .catch(error => {
+                reject(error);
+            });
+    })
+
+}
+async function wakeServerUp(sleepingServer) {
+
+    return new Promise((resolve, reject) => {
+        axios.get(sleepingServer)
+            .then(resolve(true))
+            .catch(error => {
+                reject(error);
+            });
+    })
+
+}
+
+function sendTest(caps, testId) {
+
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let driver = new webdriver.Builder()
+                .usingServer(cbtHub)
+                .withCapabilities(caps)
+                .build();
+
+            console.log("Hitting CBT with testId->", testId)
+
+            // console.log("caps->" + JSON.stringify(caps));
+
+            await driver.get(urlToTest);
+
+            // await driver.getTitle().then(function (title) {
+            //     console.log("The title is: " + title)
+            // });
+
+            await driver.quit()
+
+            resolve(true);
+        }
+        catch (e) {
+            webdriverErrorHandler(e, driver);
+            reject(false);
+        }
+
+    })
+
 }
