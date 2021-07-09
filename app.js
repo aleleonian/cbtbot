@@ -47,8 +47,8 @@ async function doYourthing() {
         let testResults = await getTestResults(testId);
 
         console.log("testResults->" + testResults)
-
-        let howManyEntries = parseInt(testResults.substr(0, testResults.indexOf('signals')).trim());
+        
+        let howManyEntries = parseInt(testResults.substr(8,testResults.length));
 
         console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
 
@@ -79,7 +79,7 @@ function handleFailure(err, driver) {
 async function getTestResults(testId) {
 
     return new Promise((resolve, reject) => {
-        axios.get(`https://backend.vernon.net.ar/signals?testId=${testId}`)
+        axios.get(`https://backend.vernon.net.ar/results?testId=${testId}`)
             .then(response => {
                 resolve(response.data)
             })
