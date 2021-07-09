@@ -4,6 +4,7 @@ let capsArray = require('./browsers.all.cbt.json')
 
 "use strict";
 var webdriver = require("selenium-webdriver");
+let driver;
 
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
@@ -105,7 +106,7 @@ function sendTest(caps, testId) {
 
         try {
 
-            let driver = new webdriver.Builder()
+            driver = new webdriver.Builder()
                 .usingServer(cbtHub)
                 .withCapabilities(caps)
                 .build();
