@@ -4,7 +4,6 @@ let capsArray = require('./browsers.all.cbt.json')
 
 "use strict";
 var webdriver = require("selenium-webdriver");
-let driver;
 
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
@@ -61,7 +60,7 @@ async function doYourthing() {
     }
 
     catch (err) {
-        handleFailure(err, driver)
+        console.log("doYourthing() somehow failed! ->", err)
     }
 
 }
@@ -78,7 +77,7 @@ function handleFailure(err, driver) {
 async function getTestResults(testId) {
 
     return new Promise((resolve, reject) => {
-        axios.get(`https://backend.alejandroleonian.com.ar/signals?testId=${testId}`)
+        axios.get(`https://backend.vernon.net.ar/signals?testId=${testId}`)
             .then(response => {
                 resolve(response.data)
             })
@@ -106,7 +105,7 @@ function sendTest(caps, testId) {
 
         try {
 
-            driver = new webdriver.Builder()
+            let driver = new webdriver.Builder()
                 .usingServer(cbtHub)
                 .withCapabilities(caps)
                 .build();
@@ -126,7 +125,7 @@ function sendTest(caps, testId) {
             resolve(true);
         }
         catch (e) {
-            webdriverErrorHandler(e, driver);
+            handleFailure(e, driver);
             reject(false);
         }
 
