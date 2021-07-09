@@ -3,15 +3,5 @@
         "browserName": "Chrome",
         "version": "77x64",
         "platform": "Windows 10"
-    },
-    {
-        "browserName": "Firefox",
-        "version": "71x64",
-        "platform": "Windows 10"
-    },
-    {
-        "browserName": "MicrosoftEdge",
-        "version": "18",
-        "platform": "Windows 10"
     }
 ]

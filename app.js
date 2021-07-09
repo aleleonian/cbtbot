@@ -46,7 +46,9 @@ async function doYourthing() {
 
         let testResults = await getTestResults(testId);
 
-        let howManyEntries = parseInt(testResults.substr(0, testResults.indexOf('results')).trim());
+        console.log("testResults->" + testResults)
+
+        let howManyEntries = parseInt(testResults.substr(0, testResults.indexOf('signals')).trim());
 
         console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
 
