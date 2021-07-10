@@ -4,6 +4,7 @@ let capsArray = require('./browsers.all.cbt.json')
 
 "use strict";
 var webdriver = require("selenium-webdriver");
+const {By, until} = require('selenium-webdriver');
 
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
@@ -123,6 +124,10 @@ function sendTest(caps, testId) {
             // console.log("caps->" + JSON.stringify(caps));
 
             await driver.get(urlToTest);
+
+            let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
+
+            await driver.wait(until.elementTextIs(taskFinishedElement,"TASK FINISHED."));
 
             // driver.manage().logs().get(logging.Type.BROWSER)
             // .then(function(entries) {
