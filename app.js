@@ -18,7 +18,7 @@ urlToTest += `?testId=${testId}`
 var basicCapInfo = {
     name: 'Vernon Test',
     build: '1.0',
-    record_video: 'false',
+    record_video: 'true',
     record_network: 'false',
     username: username,
     password: authkey
