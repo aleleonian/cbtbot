@@ -18,7 +18,7 @@ urlToTest += `?testId=${testId}`
 var basicCapInfo = {
     name: 'Vernon Test',
     build: '1.0',
-    record_video: 'true',
+    record_video: 'false',
     record_network: 'false',
     username: username,
     password: authkey
@@ -58,7 +58,7 @@ async function doYourthing() {
 
         }
 
-        process.exitCode(1)
+        process.exitCode = 1
 
 
     }
