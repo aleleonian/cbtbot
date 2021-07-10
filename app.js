@@ -127,6 +127,8 @@ function sendTest(caps, testId) {
 
             let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
 
+            // await driver.wait(until.elementTextIs(driver.wait(until.elementLocated(buttonLogin)), 'Sign Up'), 80000);
+
             await driver.wait(until.elementTextIs(taskFinishedElement,"TASK FINISHED."));
 
             // driver.manage().logs().get(logging.Type.BROWSER)
