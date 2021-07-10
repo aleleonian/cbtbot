@@ -47,8 +47,8 @@ async function doYourthing() {
         let testResults = await getTestResults(testId);
 
         console.log("testResults->" + testResults)
-        
-        let howManyEntries = parseInt(testResults.substr(8,testResults.length));
+
+        let howManyEntries = parseInt(testResults.substr(8, testResults.length));
 
         console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
 
@@ -56,9 +56,13 @@ async function doYourthing() {
 
             console.log(`ALL GOOD :D`)
 
+            process.exitCode = 0
+
         }
 
-        process.exitCode = 1
+        else {
+            process.exitCode = 1
+        }
 
 
     }
