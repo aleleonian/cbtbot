@@ -13,7 +13,7 @@ let urlToTest = process.env.TESTPAGE
 const testId = new Date().getTime();
 
 urlToTest += `?testId=${testId}`
-
+let driver;
 
 var basicCapInfo = {
     name: 'Vernon Test',
@@ -27,11 +27,11 @@ var basicCapInfo = {
 async function doYourthing() {
     try {
 
-        console.log("Waking the servers up...")
+        // console.log("Waking the servers up...")
 
-        await wakeServerUp('https://backend.vernon.net.ar/');
+        // await wakeServerUp('https://backend.vernon.net.ar/');
 
-        await wakeServerUp(urlToTest);
+        // await wakeServerUp(urlToTest);
 
         for (let i = 0; i < capsArray.length; i++) {
 
@@ -95,17 +95,17 @@ async function getTestResults(testId) {
     })
 
 }
-async function wakeServerUp(sleepingServer) {
+// async function wakeServerUp(sleepingServer) {
 
-    return new Promise((resolve, reject) => {
-        axios.get(sleepingServer)
-            .then(resolve(true))
-            .catch(error => {
-                reject(error);
-            });
-    })
+//     return new Promise((resolve, reject) => {
+//         axios.get(sleepingServer)
+//             .then(resolve(true))
+//             .catch(error => {
+//                 reject(error);
+//             });
+//     })
 
-}
+// }
 
 function sendTest(caps, testId) {
 
@@ -113,7 +113,7 @@ function sendTest(caps, testId) {
 
         try {
 
-            let driver = new webdriver.Builder()
+            driver = new webdriver.Builder()
                 .usingServer(cbtHub)
                 .withCapabilities(caps)
                 .build();
@@ -123,6 +123,13 @@ function sendTest(caps, testId) {
             // console.log("caps->" + JSON.stringify(caps));
 
             await driver.get(urlToTest);
+
+            // driver.manage().logs().get(logging.Type.BROWSER)
+            // .then(function(entries) {
+            //    entries.forEach(function(entry) {
+            //      console.log('[%s] %s', entry.level.name, entry.message);
+            //    });
+            // });
 
             // await driver.getTitle().then(function (title) {
             //     console.log("The title is: " + title)
