@@ -58,6 +58,8 @@ async function doYourthing() {
 
         }
 
+        process.exitCode(1)
+
 
     }
 
