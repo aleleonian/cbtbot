@@ -29,7 +29,7 @@ async function doYourthing() {
 
         console.log("Waking the servers up...")
 
-        await wakeServerUp('https://backend.alejandroleonian.com.ar/');
+        await wakeServerUp('https://backend.vernon.net.ar/');
 
         await wakeServerUp(urlToTest);
 
