@@ -3,5 +3,15 @@
         "browserName": "Chrome",
         "version": "77x64",
         "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "73x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "79",
+        "platform": "Windows 10"
     }
 ]
