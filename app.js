@@ -17,7 +17,7 @@ urlToTest += `?testId=${testId}`
 let driver;
 
 var basicCapInfo = {
-    name: 'Vernon Test',
+    name: 'Vernon Test ' + testId,
     build: '1.0',
     record_video: 'true',
     record_network: 'false',
