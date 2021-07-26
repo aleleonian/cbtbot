@@ -4,20 +4,25 @@ let capsArray = require('./browsers.all.cbt.json')
 
 "use strict";
 var webdriver = require("selenium-webdriver");
-const {By, until} = require('selenium-webdriver');
+const { By, until } = require('selenium-webdriver');
 
 var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
 
 var username = process.env.CBTUSERNAME;
 var authkey = process.env.CBTAUTHKEY;
-let urlToTest = process.env.TESTPAGE
-const testId = new Date().getTime();
+let originalUrlToTest = process.env.TESTPAGE;
+let urlToTest = "";
+let testResultsUrl = process.env.TESTRESULPAGE;
 
-urlToTest += `?c3=${testId}`
+let testResultsArray = [];
+let sessionIdArray = [];
+
 let driver;
 
+let sessionName = "botPrudentVersion";
+
 var basicCapInfo = {
-    name: 'Vernon Test ' + testId,
+    name: 'Vernon Test ' + sessionName,
     build: '1.0',
     record_video: 'true',
     record_network: 'false',
@@ -28,44 +33,57 @@ var basicCapInfo = {
 async function doYourthing() {
     try {
 
-        // console.log("Waking the servers up...")
-
-        // await wakeServerUp('https://backend.vernon.net.ar/');
-
-        // await wakeServerUp(urlToTest);
-
         for (let i = 0; i < capsArray.length; i++) {
 
             caps = { ...basicCapInfo, ...capsArray[i] };
 
-            console.log("caps->" + JSON.stringify(caps))
+            // console.log("caps->" + JSON.stringify(caps))
+
+
+            const testId = new Date().getTime();
+
+            urlToTest = originalUrlToTest + `?c3=${testId}`;
+
+            sessionIdArray.push(testId);
 
             await sendTest(caps, testId);
 
+            let testResults = await getTestResults(sessionIdArray[i]);
+
+            testResultsArray.push(testResults);
         }
 
 
-        let testResults = await getTestResults(testId);
-
-        console.log("testResults->" + testResults)
-
-        let howManyEntries = parseInt(testResults.substr(8, testResults.length));
+        let howManyEntries = testResultsArray.length;
 
         console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
 
         if (howManyEntries == capsArray.length) {
 
-            console.log(`ALL GOOD :D`)
-
+            console.log("Got all the expected test results.");
             process.exitCode = 0
 
         }
 
         else {
+
+            console.log("Did not get all the expected test results.");
             process.exitCode = 1
         }
 
+        for (let i = 0; i < testResultsArray.length; i++) {
 
+            let aSession = testResultsArray[i];
+
+            if (!aSession.data.postct.eos) {
+                console.log(`Session ${sessionIdArray[i]} has no EOS`);
+            }
+            else
+            {
+                console.log(`Session ${sessionIdArray[i]} EOS -> ${aSession.data.postct.eos}`);
+            }
+
+        }
     }
 
     catch (err) {
@@ -86,7 +104,7 @@ function handleFailure(err, driver) {
 async function getTestResults(testId) {
 
     return new Promise((resolve, reject) => {
-        axios.get(`https://backend.vernon.net.ar/results?testId=${testId}`)
+        axios.get(`${testResultsUrl}?id=${testId}`)
             .then(response => {
                 resolve(response.data)
             })
@@ -119,7 +137,7 @@ function sendTest(caps, testId) {
                 .withCapabilities(caps)
                 .build();
 
-            console.log("Hitting CBT with testId->", testId)
+            console.log("Hitting CBT with testId->", testId);
 
             // console.log("caps->" + JSON.stringify(caps));
 
@@ -129,7 +147,7 @@ function sendTest(caps, testId) {
 
             // await driver.wait(until.elementTextIs(driver.wait(until.elementLocated(buttonLogin)), 'Sign Up'), 80000);
 
-            await driver.wait(until.elementTextIs(taskFinishedElement,"TASK FINISHED."));
+            await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
 
             // driver.manage().logs().get(logging.Type.BROWSER)
             // .then(function(entries) {
