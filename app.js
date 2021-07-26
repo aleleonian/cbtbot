@@ -13,7 +13,7 @@ var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE
 const testId = new Date().getTime();
 
-urlToTest += `?testId=${testId}`
+urlToTest += `?c3=${testId}`
 let driver;
 
 var basicCapInfo = {
