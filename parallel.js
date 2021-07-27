@@ -17,7 +17,7 @@ var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
 
-let sessionTimeOut = 5;
+let sessionTimeOut = 1000;
 
 let testResultsArray = [];
 
@@ -58,6 +58,10 @@ var flows = randomBrowsers.map(function (browser) {
                 .withCapabilities(caps)
                 .build();
 
+            await driver.manage().setTimeouts({
+                pageLoad: sessionTimeOut
+            })
+
             let sessionId;
 
             await driver.getSession().then(function (session) {
@@ -66,11 +70,14 @@ var flows = randomBrowsers.map(function (browser) {
             });
 
             console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
+            // console.log("driver->" + JSON.stringify(driver));
 
-            let timeOutTimer = setTimeout(async () => {
-                console.log(`Aborting cbt session ${sessionId} due to timeout.`);
-                throw ("Session timeout");
-            }, sessionTimeOut * 1000);
+            // let timeOutTimer = setTimeout(async () => {
+            //     console.log(`Aborting cbt session ${sessionId} due to timeout.`);
+            //     // console.log("driver->" + JSON.stringify(driver));
+            //     await driver.quit();
+            //     resolve(false)
+            // }, sessionTimeOut * 1000);
 
             await driver.get(urlToTest + `?c3=${sessionId}`);
 
@@ -78,11 +85,13 @@ var flows = randomBrowsers.map(function (browser) {
 
             await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
 
-            await driver.quit();
-
             let testResults = await getTestResults(sessionId);
 
             testResultsArray.push(testResults);
+
+            // await new Promise(resolve => setTimeout(resolve, 5000));
+
+            await driver.quit();
 
             resolve(true)
 
@@ -90,7 +99,7 @@ var flows = randomBrowsers.map(function (browser) {
         catch (err) {
             // console.error('Exception!\n', err.stack, '\n');
             console.error('Exception!\n', err, '\n');
-            await driver.quit();
+            // await driver.quit();
             resolve(false);
         }
     })
@@ -111,7 +120,7 @@ async function getTestResults(testId) {
 }
 async function main() {
 
-    console.log("Starting tests...");
+    console.log(`Starting ${howManySessions} tests...`);
 
     await Promise.all(flows);
 
@@ -134,6 +143,8 @@ async function main() {
         process.exitCode = 1
     }
 
+    showResults();
+
     // console.log("length->" + testResultsArray.length);
 
     // console.log("testResultsArray->" + JSON.stringify(testResultsArray));
@@ -145,17 +156,20 @@ async function main() {
 }
 
 function showResults() {
-    for (let i = 0; i < testResultsArray.length; i++) {
 
-        let aSession = testResultsArray[i];
+    if (testResultsArray.length > 0) {
+        for (let i = 0; i < testResultsArray.length; i++) {
 
-        if (!aSession.data.postct.eos) {
-            console.log(`Session ${aSession.data.postct.c3} has no EOS`);
+            let aSession = testResultsArray[i];
+
+            if (!aSession.data.postct.eos) {
+                console.log(`Session ${aSession.data.postct.c3} has no EOS`);
+            }
+            else {
+                console.log(`Session ${aSession.data.postct.c3} EOS -> ${aSession.data.postct.eos}`);
+            }
+
         }
-        else {
-            console.log(`Session ${aSession.data.postct.c3} EOS -> ${aSession.data.postct.eos}`);
-        }
-
     }
 }
 
