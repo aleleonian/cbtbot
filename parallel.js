@@ -17,7 +17,8 @@ var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
 
-let sessionTimeOut = 1000;
+let pageLoadTimeout = 60000;
+let implicitTimeout = 180000;
 
 let testResultsArray = [];
 
@@ -32,7 +33,7 @@ var browsers = require("./browsers.all.cbt.json");
 
 let randomBrowsers = [];
 
-let howManySessions = 1;
+let howManySessions = 5;
 
 generateRandomBrowserList()
 
@@ -46,6 +47,7 @@ var flows = randomBrowsers.map(function (browser) {
             browserName: browser.browserName,
             version: browser.version,
             platform: browser.platform,
+            record_video : 'true',
             screen_resolution: browser.screen_resolution,
             username: username,
             password: authkey
@@ -59,7 +61,7 @@ var flows = randomBrowsers.map(function (browser) {
                 .build();
 
             await driver.manage().setTimeouts({
-                pageLoad: sessionTimeOut
+                pageLoad: pageLoadTimeout, implicit: implicitTimeout
             })
 
             let sessionId;
@@ -85,6 +87,8 @@ var flows = randomBrowsers.map(function (browser) {
 
             await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
 
+            console.log(`test ${sessionId} finished!`);
+            
             let testResults = await getTestResults(sessionId);
 
             testResultsArray.push(testResults);
