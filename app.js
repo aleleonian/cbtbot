@@ -1,105 +1,113 @@
 require('dotenv').config()
+
 const axios = require('axios');
-let capsArray = require('./browsers.all.cbt.json')
 
-"use strict";
-var webdriver = require("selenium-webdriver");
-const { By, until } = require('selenium-webdriver');
+var argv = require('minimist')(process.argv.slice(2));
 
-var cbtHub = "http://hub.CrossBrowserTesting.com:80/wd/hub";
+let sessionGroupName = "";
+
+if (argv['name']) sessionGroupName = argv['name'];
+
 
 var username = process.env.CBTUSERNAME;
 var authkey = process.env.CBTAUTHKEY;
-let originalUrlToTest = process.env.TESTPAGE;
-let urlToTest = "";
+
+var username = process.env.CBTUSERNAME;
+var authkey = process.env.CBTAUTHKEY;
+let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
 
+let pageLoadTimeout = 60000;
+let implicitTimeout = 180000;
+
 let testResultsArray = [];
-let sessionIdArray = [];
 
-let driver;
+var webdriver = require('selenium-webdriver'),
+    SeleniumServer = require('selenium-webdriver/remote').SeleniumServer,
+    request = require('request');
+const { By, until } = require('selenium-webdriver');
 
-let sessionName = "botPrudentVersion";
+var remoteHub = "http://" + username + ":" + authkey + "@hub.crossbrowsertesting.com:80/wd/hub";
 
-var basicCapInfo = {
-    name: 'Vernon Test ' + sessionName,
-    build: '1.0',
-    record_video: 'true',
-    record_network: 'false',
-    username: username,
-    password: authkey
-};
+var browsers = require("./browsers.all.cbt.json");
 
-async function doYourthing() {
-    try {
+let randomBrowsers = [];
 
-        for (let i = 0; i < capsArray.length; i++) {
+let howManySessions = 5;
 
-            caps = { ...basicCapInfo, ...capsArray[i] };
-
-            // console.log("caps->" + JSON.stringify(caps))
+generateRandomBrowserList()
 
 
-            const testId = new Date().getTime();
+var flows = randomBrowsers.map(function (browser) {
 
-            urlToTest = originalUrlToTest + `?c3=${testId}`;
+    return new Promise(async (resolve, reject) => {
 
-            sessionIdArray.push(testId);
+        var caps = {
+            name: `Vernon test ->${sessionGroupName}`,
+            browserName: browser.browserName,
+            version: browser.version,
+            platform: browser.platform,
+            record_video : 'true',
+            screen_resolution: browser.screen_resolution,
+            username: username,
+            password: authkey
+        };
 
-            await sendTest(caps, testId);
 
-            let testResults = await getTestResults(sessionIdArray[i]);
+        try {
+            var driver = new webdriver.Builder()
+                .usingServer(remoteHub)
+                .withCapabilities(caps)
+                .build();
+
+            await driver.manage().setTimeouts({
+                pageLoad: pageLoadTimeout, implicit: implicitTimeout
+            })
+
+            let sessionId;
+
+            await driver.getSession().then(function (session) {
+                sessionId = session.id_; //need for API calls
+                // console.log('Session ID: ', sessionId);
+            });
+
+            console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
+            // console.log("driver->" + JSON.stringify(driver));
+
+            // let timeOutTimer = setTimeout(async () => {
+            //     console.log(`Aborting cbt session ${sessionId} due to timeout.`);
+            //     // console.log("driver->" + JSON.stringify(driver));
+            //     await driver.quit();
+            //     resolve(false)
+            // }, sessionTimeOut * 1000);
+
+            await driver.get(urlToTest + `?c3=${sessionId}`);
+
+            let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
+
+            await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
+
+            console.log(`test ${sessionId} finished!`);
+            
+            let testResults = await getTestResults(sessionId);
 
             testResultsArray.push(testResults);
-        }
 
+            // await new Promise(resolve => setTimeout(resolve, 5000));
 
-        let howManyEntries = testResultsArray.length;
+            await driver.quit();
 
-        console.log(`${capsArray.length} tests expected, got ${howManyEntries}.`)
-
-        if (howManyEntries == capsArray.length) {
-
-            console.log("Got all the expected test results.");
-            process.exitCode = 0
+            resolve(true)
 
         }
-
-        else {
-
-            console.log("Did not get all the expected test results.");
-            process.exitCode = 1
+        catch (err) {
+            // console.error('Exception!\n', err.stack, '\n');
+            console.error('Exception!\n', err, '\n');
+            // await driver.quit();
+            resolve(false);
         }
-
-        for (let i = 0; i < testResultsArray.length; i++) {
-
-            let aSession = testResultsArray[i];
-
-            if (!aSession.data.postct.eos) {
-                console.log(`Session ${sessionIdArray[i]} has no EOS`);
-            }
-            else
-            {
-                console.log(`Session ${sessionIdArray[i]} EOS -> ${aSession.data.postct.eos}`);
-            }
-
-        }
-    }
-
-    catch (err) {
-        console.log("doYourthing() somehow failed! ->", err)
-    }
-
-}
-
-
-
-doYourthing();
-
-function handleFailure(err, driver) {
-    console.error('Something went wrong!\n', err.stack, '\n');
-    driver.quit();
-}
+    })
+});
 
 async function getTestResults(testId) {
 
@@ -114,61 +122,71 @@ async function getTestResults(testId) {
     })
 
 }
-// async function wakeServerUp(sleepingServer) {
+async function main() {
 
-//     return new Promise((resolve, reject) => {
-//         axios.get(sleepingServer)
-//             .then(resolve(true))
-//             .catch(error => {
-//                 reject(error);
-//             });
-//     })
+    console.log(`Starting ${howManySessions} tests...`);
 
-// }
+    await Promise.all(flows);
 
-function sendTest(caps, testId) {
+    console.log("Finished los hits!");
 
-    return new Promise(async (resolve, reject) => {
+    let howManyEntries = testResultsArray.length;
 
-        try {
+    console.log(`${randomBrowsers.length} tests expected, got ${howManyEntries}.`)
 
-            driver = new webdriver.Builder()
-                .usingServer(cbtHub)
-                .withCapabilities(caps)
-                .build();
+    if (howManyEntries == randomBrowsers.length) {
 
-            console.log("Hitting CBT with testId->", testId);
+        console.log("Got all the expected test results.");
+        process.exitCode = 0
 
-            // console.log("caps->" + JSON.stringify(caps));
+    }
 
-            await driver.get(urlToTest);
+    else {
 
-            let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
+        console.log("Did not get all the expected test results.");
+        process.exitCode = 1
+    }
 
-            // await driver.wait(until.elementTextIs(driver.wait(until.elementLocated(buttonLogin)), 'Sign Up'), 80000);
+    showResults();
 
-            await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
+    // console.log("length->" + testResultsArray.length);
 
-            // driver.manage().logs().get(logging.Type.BROWSER)
-            // .then(function(entries) {
-            //    entries.forEach(function(entry) {
-            //      console.log('[%s] %s', entry.level.name, entry.message);
-            //    });
-            // });
+    // console.log("testResultsArray->" + JSON.stringify(testResultsArray));
 
-            // await driver.getTitle().then(function (title) {
-            //     console.log("The title is: " + title)
-            // });
 
-            await driver.quit()
 
-            resolve(true);
-        }
-        catch (e) {
-            handleFailure(e, driver);
-            reject(false);
-        }
 
-    })
 
 }
+
+function showResults() {
+
+    if (testResultsArray.length > 0) {
+        for (let i = 0; i < testResultsArray.length; i++) {
+
+            let aSession = testResultsArray[i];
+
+            if (!aSession.data.postct.eos) {
+                console.log(`Session ${aSession.data.postct.c3} has no EOS`);
+            }
+            else {
+                console.log(`Session ${aSession.data.postct.c3} EOS -> ${aSession.data.postct.eos}`);
+            }
+
+        }
+    }
+}
+
+function generateRandomBrowserList() {
+    for (let i = 0; i < howManySessions; i++) {
+        let random_index;
+        while (!random_index) {
+            let tmp = Math.floor(Math.random() * browsers.length);
+            if (!randomBrowsers.filter((g) => browsers[tmp] == g).length)
+                random_index = tmp;
+        }
+        randomBrowsers.push(browsers[random_index]);
+    }
+}
+main();
+
