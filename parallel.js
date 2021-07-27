@@ -1,5 +1,13 @@
 require('dotenv').config()
+
 const axios = require('axios');
+
+var argv = require('minimist')(process.argv.slice(2));
+
+let sessionGroupName = "";
+
+if (argv['name']) sessionGroupName = argv['name'];
+
 
 var username = process.env.CBTUSERNAME;
 var authkey = process.env.CBTAUTHKEY;
@@ -8,6 +16,8 @@ var username = process.env.CBTUSERNAME;
 var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
+
+let sessionTimeOut = 10;
 
 let testResultsArray = [];
 
@@ -18,18 +28,21 @@ const { By, until } = require('selenium-webdriver');
 
 var remoteHub = "http://" + username + ":" + authkey + "@hub.crossbrowsertesting.com:80/wd/hub";
 
-var browsers = [
-    { browserName: 'Chrome', platform: 'Windows 10', version: '64', screen_resolution: '1366x768' },
-    { browserName: 'Chrome', platform: 'Mac OSX 10.14', version: '71x64', screen_resolution: '1366x768' },
-];
+var browsers = require("./browsers.all.cbt.json");
+
+let randomBrowsers = [];
+
+let howManySessions = 5;
+
+generateRandomBrowserList()
 
 
-var flows = browsers.map(function (browser) {
+var flows = randomBrowsers.map(function (browser) {
 
     return new Promise((resolve, reject) => {
 
         var caps = {
-            name: 'Vernon Parallel Example',
+            name: `Vernon test ->${sessionGroupName}`,
             browserName: browser.browserName,
             version: browser.version,
             platform: browser.platform,
@@ -65,9 +78,15 @@ var flows = browsers.map(function (browser) {
 
                 await driver.getSession().then(function (session) {
                     sessionId = session.id_; //need for API calls
-                    console.log('Session ID: ', sessionId);
-                    console.log('See your test run at: https://app.crossbrowsertesting.com/selenium/' + sessionId)
+                    // console.log('Session ID: ', sessionId);
                 });
+
+                console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
+
+                let timeOutTimer = setTimeout(() => {
+                    console.log(`Aborting cbt session ${sessionId} due to timeout.`);
+                    resolve(false);
+                }, sessionTimeOut * 1000);
 
                 await driver.get(urlToTest + `?c3=${sessionId}`);
 
@@ -98,16 +117,16 @@ var flows = browsers.map(function (browser) {
 async function main() {
 
     console.log("Starting tests...");
-    
+
     await Promise.all(flows);
 
     console.log("Finished los hits!");
 
     let howManyEntries = testResultsArray.length;
 
-    console.log(`${browsers.length} tests expected, got ${howManyEntries}.`)
+    console.log(`${randomBrowsers.length} tests expected, got ${howManyEntries}.`)
 
-    if (howManyEntries == browsers.length) {
+    if (howManyEntries == randomBrowsers.length) {
 
         console.log("Got all the expected test results.");
         process.exitCode = 0
@@ -120,12 +139,17 @@ async function main() {
         process.exitCode = 1
     }
 
-    console.log("length->" + testResultsArray.length);
+    // console.log("length->" + testResultsArray.length);
 
-    console.log("testResultsArray->" + JSON.stringify(testResultsArray));
+    // console.log("testResultsArray->" + JSON.stringify(testResultsArray));
 
-    
 
+
+
+
+}
+
+function showResults() {
     for (let i = 0; i < testResultsArray.length; i++) {
 
         let aSession = testResultsArray[i];
@@ -138,8 +162,18 @@ async function main() {
         }
 
     }
-
 }
 
+function generateRandomBrowserList() {
+    for (let i = 0; i < howManySessions; i++) {
+        let random_index;
+        while (!random_index) {
+            let tmp = Math.floor(Math.random() * browsers.length);
+            if (!randomBrowsers.filter((g) => browsers[tmp] == g).length)
+                random_index = tmp;
+        }
+        randomBrowsers.push(browsers[random_index]);
+    }
+}
 main();
 

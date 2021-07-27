@@ -1,12 +1,431 @@
 [
     {
+        "browserName": "MicrosoftEdge",
+        "version": "14",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "15",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "16",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "17",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "18",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "80",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "84",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "86",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "88",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "89",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "90",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "MicrosoftEdge",
+        "version": "91",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "35",
+        "platform": "Windows 7"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "43x64",
+        "platform": "Windows 7 64-Bit"
+    }, 
+    {
+        "browserName": "Chrome",
+        "version": "47x64",
+        "platform": "Windows 8"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "50x64",
+        "platform": "Windows 8"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "55x64",
+        "platform": "Windows 8",
+        "log_whitelist": ["https://cygnus.ozoki.com/2/1.1.20/main.js?o=1 0:103498 Uncaught TypeError: Failed to execute 'observe' on 'PerformanceObserve…erver MUST have a non-empty entryTypes attribute.", "https://dev-triumph-5.ozoki.com/2/2.15.0/main.js?o=1 0 'webkitAudioContext' is deprecated. Please use 'AudioContext' instead."],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Chrome",
+        "version": "57x64",
+        "platform": "Windows 8",
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Chrome",
+        "version": "60x64",
+        "platform": "Windows 8.1",
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Chrome",
+        "version": "63x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "67x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "70x64",
+        "platform": "Windows 8.1",
+        "log_whitelist": ["https://dev-triumph-5.ozoki.com/2/2.15.0/main.js 0 document.origin is deprecated and will be removed in M70, around October 2018. Please use self.origin (window.origin) instead. See https://www.chromestatus.com/features/5701042356355072 for more details.", "https://dev-triumph-5.ozoki.com/2/2.15.0/main.js 0 'webkitURL' is deprecated. Please use 'URL' instead."]
+    },
+    {
+        "browserName": "Chrome",
+        "version": "74x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "77x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "80x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "81x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "83x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "84x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "85x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "86x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "87x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "88x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "89x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "90x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "version": "91x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "36",
+        "platform": "Windows 7",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files%20(x86)/Mozilla%20Firefox%2036/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "37",
+        "platform": "Windows 7",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files%20(x86)/Mozilla%20Firefox%2037/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "38",
+        "platform": "Windows 7",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files%20(x86)/Mozilla%20Firefox%2038/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "40",
+        "platform": "Windows 7",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files%20(x86)/Mozilla%20Firefox%2040/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "41",
+        "platform": "Windows 7",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files%20(x86)/Mozilla%20Firefox%2041/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "42x64",
+        "platform": "Windows 8",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files/Mozilla%20Firefox%2042%2064-bit/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "44x64",
+        "platform": "Windows 8",
+        "log_whitelist": ["Could not read chrome manifest 'file:///c:/program%20files/Mozilla%20Firefox%2044%2064-bit/chrome.manifest'.\n"],
+        "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Firefox",
+        "version": "50x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "55x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "60x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "65x64",
+        "platform": "Windows 8.1"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "69x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "70x64",
+        "platform": "Windows 10"
+    },
+    {
         "browserName": "Firefox",
         "version": "73x64",
         "platform": "Windows 10"
     },
     {
-        "browserName": "MicrosoftEdge",
-        "version": "79",
+        "browserName": "Firefox",
+        "version": "75x64",
         "platform": "Windows 10"
-    }
+    },
+    {
+        "browserName": "Firefox",
+        "version": "78x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "79x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "80x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "81x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "83x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "84x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "85x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "86x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "87x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "88x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Firefox",
+        "version": "89x64",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Safari",
+        "version": "8",
+        "platform": "Mac OSX 10.10"
+    },
+    {
+        "browserName": "Safari",
+        "version": "9",
+        "platform": "Mac OSX 10.11"
+    },
+    {
+        "browserName": "Safari",
+        "version": "10",
+        "platform": "Mac OSX 10.12"
+    },
+    {
+        "browserName": "Safari",
+        "version": "11",
+        "platform": "Mac OSX 10.13"
+    },
+    {
+        "browserName": "Safari",
+        "version": "12",
+        "platform": "Mac OSX 10.14"
+    },
+    {
+        "browserName": "Safari",
+        "version": "13",
+        "platform": "Mac OSX 10.15"
+    },
+    {
+        "browserName": "Safari",
+        "version": "14",
+        "platform": "MacOS 11.0"
+    },
+    {
+        "browserName": "Internet Explorer",
+        "version": "10",
+        "platform": "Windows 7 64-Bit"
+    },
+    {
+        "browserName": "Internet Explorer",
+        "version": "11",
+        "platform": "Windows 10"
+    },
+    {
+        "browserName": "Chrome",
+        "deviceName": "Galaxy Tab S5E",
+        "platformVersion": "9.0",
+        "platformName": "Android",
+        "deviceOrientation": "portrait",
+        "os": "Android Galaxy Tab",
+        "os_version": "9.0",
+        "browser_version": "9.0",
+        "expected_fail_on": ["console"]
+    },
+    {
+      "browserName": "Chrome",
+      "deviceName": "Galaxy S10",
+      "platformVersion": "10.0",
+      "platformName": "Android",
+      "deviceOrientation": "portrait",
+      "os": "Android Galaxy S10",
+      "os_version": "10.0",
+      "browser_version": "10.0",
+      "expected_fail_on": ["console"]
+    },
+    {
+      "browserName": "Chrome",
+      "deviceName": "Nexus 6",
+      "platformVersion": "5.0",
+      "platformName": "Android",
+      "deviceOrientation": "portrait",
+      "os": "Android Nexus 6",
+      "os_version": "5.0",
+      "browser_version": "5.0",
+      "expected_fail_on": ["console"]
+    },
+    {
+        "browserName": "Safari",
+        "deviceName": "iPhone 11 Pro",
+        "platformVersion": "13.2",
+        "platformName": "iOS",
+        "deviceOrientation": "portrait",
+        "os": "Safari iPhone 11 Pro",
+        "os_version": "13.2",
+        "browser_version": "13.2",
+        "expected_fail_on": ["console"]
+        },
+        {
+        "browserName": "Safari",
+        "deviceName": "iPhone 7 Simulator",
+        "platformVersion": "10.2",
+        "platformName": "iOS",
+        "deviceOrientation": "portrait",
+        "os": "Safari iPhone 2 Simulator",
+        "os_version": "10.2",
+        "browser_version": "10.2",
+        "expected_fail_on": ["console"]
+        },
+        {
+          "browserName": "MicrosoftEdge",
+          "version": "88",
+          "platform": "Windows 10"
+      }
 ]
