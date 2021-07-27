@@ -17,7 +17,7 @@ var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
 
-let sessionTimeOut = 180;
+let sessionTimeOut = 5;
 
 let testResultsArray = [];
 
@@ -39,7 +39,7 @@ generateRandomBrowserList()
 
 var flows = randomBrowsers.map(function (browser) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
         var caps = {
             name: `Vernon test ->${sessionGroupName}`,
@@ -51,70 +51,64 @@ var flows = randomBrowsers.map(function (browser) {
             password: authkey
         };
 
-        async function getTestResults(testId) {
 
-            return new Promise((resolve, reject) => {
-                axios.get(`${testResultsUrl}?id=${testId}`)
-                    .then(response => {
-                        resolve(response.data)
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-            })
+        try {
+            var driver = new webdriver.Builder()
+                .usingServer(remoteHub)
+                .withCapabilities(caps)
+                .build();
+
+            let sessionId;
+
+            await driver.getSession().then(function (session) {
+                sessionId = session.id_; //need for API calls
+                // console.log('Session ID: ', sessionId);
+            });
+
+            console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
+
+            let timeOutTimer = setTimeout(async () => {
+                console.log(`Aborting cbt session ${sessionId} due to timeout.`);
+                throw ("Session timeout");
+            }, sessionTimeOut * 1000);
+
+            await driver.get(urlToTest + `?c3=${sessionId}`);
+
+            let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
+
+            await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
+
+            await driver.quit();
+
+            let testResults = await getTestResults(sessionId);
+
+            testResultsArray.push(testResults);
+
+            resolve(true)
 
         }
-
-        async function parallelExample() {
-
-
-            try {
-                var driver = new webdriver.Builder()
-                    .usingServer(remoteHub)
-                    .withCapabilities(caps)
-                    .build();
-
-                let sessionId;
-
-                await driver.getSession().then(function (session) {
-                    sessionId = session.id_; //need for API calls
-                    // console.log('Session ID: ', sessionId);
-                });
-
-                console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
-
-                let timeOutTimer = setTimeout(async () => {
-                    console.log(`Aborting cbt session ${sessionId} due to timeout.`);
-                    throw("Session timeout");
-                }, sessionTimeOut * 1000);
-
-                await driver.get(urlToTest + `?c3=${sessionId}`);
-
-                let taskFinishedElement = await driver.findElement(By.id('taskFinished'));
-
-                await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
-
-                await driver.quit();
-
-                let testResults = await getTestResults(sessionId);
-
-                testResultsArray.push(testResults);
-
-                resolve(true)
-
-            }
-            catch (err) {
-                // console.error('Exception!\n', err.stack, '\n');
-                console.error('Exception!\n', err, '\n');
-                await driver.quit();
-                resolve(false);
-            }
+        catch (err) {
+            // console.error('Exception!\n', err.stack, '\n');
+            console.error('Exception!\n', err, '\n');
+            await driver.quit();
+            resolve(false);
         }
-
-        parallelExample();
     })
 });
 
+async function getTestResults(testId) {
+
+    return new Promise((resolve, reject) => {
+        axios.get(`${testResultsUrl}?id=${testId}`)
+            .then(response => {
+                resolve(response.data)
+            })
+            .catch(error => {
+                reject(error);
+            });
+    })
+
+}
 async function main() {
 
     console.log("Starting tests...");
