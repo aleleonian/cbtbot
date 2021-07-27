@@ -17,7 +17,7 @@ var authkey = process.env.CBTAUTHKEY;
 let urlToTest = process.env.TESTPAGE;
 let testResultsUrl = process.env.TESTRESULPAGE;
 
-let sessionTimeOut = 10;
+let sessionTimeOut = 180;
 
 let testResultsArray = [];
 
@@ -32,7 +32,7 @@ var browsers = require("./browsers.all.cbt.json");
 
 let randomBrowsers = [];
 
-let howManySessions = 5;
+let howManySessions = 1;
 
 generateRandomBrowserList()
 
@@ -83,9 +83,9 @@ var flows = randomBrowsers.map(function (browser) {
 
                 console.log(`hitting ${urlToTest}?c3=${sessionId} | see at https://app.crossbrowsertesting.com/selenium/${sessionId}`);
 
-                let timeOutTimer = setTimeout(() => {
+                let timeOutTimer = setTimeout(async () => {
                     console.log(`Aborting cbt session ${sessionId} due to timeout.`);
-                    resolve(false);
+                    throw("Session timeout");
                 }, sessionTimeOut * 1000);
 
                 await driver.get(urlToTest + `?c3=${sessionId}`);
@@ -94,7 +94,7 @@ var flows = randomBrowsers.map(function (browser) {
 
                 await driver.wait(until.elementTextIs(taskFinishedElement, "TASK FINISHED."));
 
-                driver.quit();
+                await driver.quit();
 
                 let testResults = await getTestResults(sessionId);
 
@@ -104,9 +104,10 @@ var flows = randomBrowsers.map(function (browser) {
 
             }
             catch (err) {
-                console.error('Exception!\n', err.stack, '\n');
-                driver.quit();
-                reject(false);
+                // console.error('Exception!\n', err.stack, '\n');
+                console.error('Exception!\n', err, '\n');
+                await driver.quit();
+                resolve(false);
             }
         }
 
